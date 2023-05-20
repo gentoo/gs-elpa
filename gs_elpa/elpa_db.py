@@ -82,8 +82,8 @@ class ElpaDBGenerator(DBGenerator):
         #DEP_VERSION = 1 #we do not use it at the moment
 
         for entry in sexpdata.cdr(archive_contents):
-            desc = entry[PKG_INFO].I
-            realname = str(entry[PKG_NAME])
+            desc = entry[PKG_INFO].value()
+            realname = entry[PKG_NAME].value()
 
             if self.in_config([common_config, config], "exclude", realname):
                 continue
@@ -95,7 +95,7 @@ class ElpaDBGenerator(DBGenerator):
 
             pkg = Package("app-emacs", realname,
                           '.'.join(map(str, desc[INFO_VERSION])))
-            source_type = str(desc[INFO_SRC_TYPE])
+            source_type = desc[INFO_SRC_TYPE].value()
 
             allowed_ords = set(range(ord('a'), ord('z'))) \
                     | set(range(ord('A'), ord('Z'))) | \
@@ -112,9 +112,8 @@ class ElpaDBGenerator(DBGenerator):
 
             dependencies = serializable_elist(separator="\n\t")
             for dep in deps:
-                dep = self.convert_dependency(
-                    [common_config, config], str(dep[DEP_NAME]),
-                    external=False)
+                dep = self.convert_dependency([common_config, config],
+                                    dep[DEP_NAME].value(), external = False)
                 if dep:
                     dependencies.append(dep)
 
